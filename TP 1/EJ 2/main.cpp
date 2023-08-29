@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     double tInicio, tFin;
 
-    int megas = 10;
+    int megas = 300;
     int numElementos = megas * 1024 * 1024 / sizeof(int);
     vector<int> mensaje;
 
