@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv) {
     
-    freopen("salida.txt", "a", stdout);
+    freopen("salida.txt", "w", stdout);
     
     int ierror, rank, size;
     int mtag = 0;
@@ -18,6 +18,9 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     std::vector<int> vectorGrande;
     double tInicio, tFin;
+    if(rank == 0)
+        printf("Tiempo,Tamaño\n");
+
     for (int repeticion = 0 ; repeticion < 10 ; repeticion++)
         for(int i=0; i<=max; i++)
         {
@@ -42,7 +45,7 @@ int main(int argc, char **argv) {
                 // std::cout<<"\t Tamaño = "<<sizeof(vectorGrande)<<std::endl;
                 MPI_Recv(&tFin, 1, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
                 tiempo = tFin-tInicio;
-                std::printf("%f;%ld\n", tiempo, tamaño);
+                std::printf("%f,%ld\n", tiempo, tamaño);
             }
             else if (rank == 1)
             {

@@ -35,8 +35,6 @@ int main(int argc, char **argv) {
         int mitad;
         int tamaño = 2;
 
-
-
         while (tamaño <= size)
         {
 

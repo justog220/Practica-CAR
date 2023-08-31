@@ -7,7 +7,7 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    // freopen("salida.txt", "a", stdout);
+    freopen("salida.csv", "w", stdout);
 
     int ierror, rank, size, entrada = 8;
     MPI_Init(&argc, &argv);
@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     double tInicio, tFin;
 
-    int megas = 300;
+    int megas = 10;
     int numElementos = megas * 1024 * 1024 / sizeof(int);
     vector<int> mensaje;
 
@@ -29,47 +29,35 @@ int main(int argc, char **argv) {
 
     // int mensaje = 8;
 
+    if(rank == 0)
+        printf("De,A,Tiempo\n");
+
     for (int repeticiones = 0 ; repeticiones < 1 ; repeticiones++)
         for (int i = 0 ; i<size; i++) 
         {
-            std::cout<<"I = "<<i<<" | rank = "<<rank<<endl;
-            bool envio = false;
+            MPI_Barrier(MPI_COMM_WORLD); 
               
             if (rank == i)
-            {   printf("%d llego a la barrera\n", rank);  
-                MPI_Barrier(MPI_COMM_WORLD); 
-                printf("%d paso la barrera\n", rank);  
-                // tInicio = MPI_Wtime();        
-                for (int j = 0 ; j < size; j++)
-                    if (i!=j){
-                        MPI_Send(&mensaje[0], numElementos, MPI_INT, j, 0, MPI_COMM_WORLD);
-                        printf("%d envió %d elemento", rank, numElementos);
-                        // MPI_Send(&mensaje, 1, MPI_INT, j, 0, MPI_COMM_WORLD);
-                        envio = true;
-                        printf("%d envió\n", i);
-                    } 
-                        
-            } 
-
-            if(envio)
             {
-                std::cout<<"Van a entrar al segundo ciclo\n";
-                for (int j = 0 ; j<size; j++)
-                {
-                    if(j!= i and rank==j)
+                for (int j = 0 ; j < size; j++)
+                    if (i!=j)
                     {
-                        printf("%d está esperando %d elementos", rank, numElementos);
-                        MPI_Recv(&mensaje[0], numElementos, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-                        // MPI_Recv(&mensaje, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-                        printf("%d recibió\n", rank);
-                        // tFin = MPI_Wtime();
-                        printf("De %d a %d tardó: %f\n", i, j, tFin-tInicio);    
-                    }
-
-                }
+                        tInicio = MPI_Wtime();
+                        MPI_Send(&mensaje[0], numElementos, MPI_INT, j, 0, MPI_COMM_WORLD);
+                        MPI_Recv(&tFin, 1, MPI_DOUBLE, j, 0, MPI_COMM_WORLD, &status);
+                        printf("%d,%d,%f\n", rank, j, tFin-tInicio);
+                    }            
+            }
+            else
+            {
+                // MPI_Barrier(MPI_COMM_WORLD);
+                MPI_Recv(&mensaje[0], numElementos, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+                tFin = MPI_Wtime();
+ 
+                MPI_Send(&tFin, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
             }
             
-
+            
 
         }
 
