@@ -19,20 +19,14 @@ int main(int argc, char **argv) {
     int megas = 10;
     int numElementos = megas * 1024 * 1024 / sizeof(int);
     vector<int> mensaje;
-
     mensaje.resize(numElementos);
-
     for (int i = 0 ; i < numElementos ; i++)
         mensaje[i] = i;
-
-    // std::cout<<"Declaró el vector\n";
-
-    // int mensaje = 8;
 
     if(rank == 0)
         printf("De,A,Tiempo\n");
 
-    for (int repeticiones = 0 ; repeticiones < 1 ; repeticiones++)
+    for (int repeticiones = 0 ; repeticiones < 10 ; repeticiones++)
         for (int i = 0 ; i<size; i++) 
         {
             MPI_Barrier(MPI_COMM_WORLD); 
