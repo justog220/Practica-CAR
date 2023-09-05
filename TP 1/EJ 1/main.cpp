@@ -10,6 +10,8 @@ int main(int argc, char **argv) {
     
     int ierror, rank, size;
     int mtag = 0;
+
+    // Defino el máximo exponente al cual quiero que se eleve dos.
     int max = 30;
     double tiempo;
     MPI_Init(&argc, &argv);
@@ -21,41 +23,41 @@ int main(int argc, char **argv) {
     if(rank == 0)
         printf("Tiempo,Tamaño\n");
 
+    // Implemento un ciclo para que se realice muchas veces y así \
+    representar mejor
     for (int repeticion = 0 ; repeticion < 10 ; repeticion++)
         for(int i=0; i<=max; i++)
         {
+            // Se calculo el número de elementos del vector
             unsigned long tamaño = pow(2, i);
-            // printf("\n------------\nRepresentó %lld \n", tamaño);
-            
-            // int* vectorGrande = new int[tamaño];
             vectorGrande.resize(tamaño);
             for(int i = 0; i<tamaño; i++)
             {
                 vectorGrande[i] = i;
             }
             
-            // printf("Lo declaró \n");
+            // Si es el proceso 0 se envía al otro proceso y recibe el tiempo \
+            de fin para luego imprimirlo.
             if(rank == 0)
             {
                 MPI_Barrier(MPI_COMM_WORLD);
                 tInicio = MPI_Wtime();
                 MPI_Send(&vectorGrande[0], tamaño, MPI_INT, 1, mtag, MPI_COMM_WORLD);
-                
-                //printf("Tardó %f \n",tFin-tInicio);
-                // std::cout<<"\t Tamaño = "<<sizeof(vectorGrande)<<std::endl;
+
                 MPI_Recv(&tFin, 1, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
                 tiempo = tFin-tInicio;
                 std::printf("%f,%ld\n", tiempo, tamaño);
             }
             else if (rank == 1)
             {
+                // El segundo proceso recibe el vector, calcula el tiempo \
+                y lo envía
                 MPI_Barrier(MPI_COMM_WORLD);
                 MPI_Recv(&vectorGrande[0], tamaño, MPI_INT, 0, mtag, MPI_COMM_WORLD, &status);
                 tFin = MPI_Wtime();
 
                 MPI_Send(&tFin, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
             }
-            // delete [] vectorGrande;
         }
     
 

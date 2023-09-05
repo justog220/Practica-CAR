@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     double tInicio, tFin;
 
-    int megas = 10;
+    // Se define un vector de tamaño {megas}. 
+    int megas = 300;
     int numElementos = megas * 1024 * 1024 / sizeof(int);
     vector<int> mensaje;
     mensaje.resize(numElementos);
@@ -26,6 +27,7 @@ int main(int argc, char **argv) {
     if(rank == 0)
         printf("De,A,Tiempo\n");
 
+    // Se define un número de repeticiones para representar mejor el caso
     for (int repeticiones = 0 ; repeticiones < 10 ; repeticiones++)
         for (int i = 0 ; i<size; i++) 
         {
@@ -33,6 +35,8 @@ int main(int argc, char **argv) {
               
             if (rank == i)
             {
+                // Se envía a todos los procesos y se miden los distintos tiempos \
+                para luego conformar la matriz con todos los tiempos.
                 for (int j = 0 ; j < size; j++)
                     if (i!=j)
                     {
@@ -50,9 +54,6 @@ int main(int argc, char **argv) {
  
                 MPI_Send(&tFin, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
             }
-            
-            
-
         }
 
 
