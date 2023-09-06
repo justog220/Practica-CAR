@@ -2,12 +2,14 @@
 #include <mpi.h>
 #include <iostream>
 #include <vector>
+#include "modulos/funciones.h"
 
 using namespace std;
 
+
+
 int main(int argc, char **argv) {
 
-    freopen("salida.csv", "w", stdout);
 
     int ierror, rank, size, entrada = 8;
     MPI_Init(&argc, &argv);
@@ -16,15 +18,14 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     double tInicio, tFin;
 
-    // Se define un vector de tamaño {megas}. 
-    int megas = 300;
-    int numElementos = megas * 1024 * 1024 / sizeof(int);
-    vector<int> mensaje;
-    mensaje.resize(numElementos);
-    for (int i = 0 ; i < numElementos ; i++)
-        mensaje[i] = i;
+    int mensaje = 8;
+    if(rank == 0)
+        mensaje = 10;
 
-    
+    My_BcastTree(&mensaje, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    printf("Soy %d y mi valor es %d\n", rank, mensaje);
+
     MPI_Finalize();
 
 
