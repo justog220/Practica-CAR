@@ -10,13 +10,13 @@ void My_BcastPtoPto(void *sendbuff, int largo, MPI_Datatype tipoDeDato, int orig
     MPI_Comm_rank(communicator, &rank);
     if(rank == 0)
     {
-        for(int i = 0 ; i < tam ; i++)
+        for(int i = 1 ; i < tam ; i++)
         {
             MPI_Send(sendbuff, largo, tipoDeDato, i, mtag, communicator);
         }
     }
     else
-    {
+    {   
         MPI_Recv(sendbuff, largo, tipoDeDato, origen, mtag, communicator, &status);
     }
 }
@@ -61,3 +61,4 @@ void My_BcastTree(void *sendbuff, int largo, MPI_Datatype tipoDeDato, int origen
         
     }
 }
+
