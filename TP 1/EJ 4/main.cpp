@@ -55,10 +55,12 @@ int main(int argc, char **argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank); //Paso por referencia rank y la modifica
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+
     vector<int> recuento;
     vector<int> recuentoTotal(5);
 
-    
+    /* Hago que el proceso 0 se encargue de cargar la secuencia,
+    fragmentarla y enviar estos fragmentos a quién corresponda*/
     if (rank == 0)
     {
         ifstream archivo(ruta);
@@ -70,9 +72,10 @@ int main(int argc, char **argv) {
         }
         string fragmentoAnalisis;
 
+        // Calcula el largo del fragmento.
         int largoSecuencia = secuencia.length();
         int largoFragmento = largoSecuencia / size;
-
+        printf(largoSecuencia);
         for (int i = 0; i < size ; i++)
         {
             string fragmento;
@@ -81,6 +84,9 @@ int main(int argc, char **argv) {
             fragmento = secuencia.substr(posInicio, posFinal-posInicio);
             largo = fragmento.size();
 
+            /* Envía primero el largo de la secuencia y luego el fragmento.
+            Analizando el código en frío podría haber hecho un broadcast del largo.
+            (o un Scatter, pero al momento de su realización no lo vimos)*/ 
             if (i!=rank)
             {
                 MPI_Send(&largo, 1, MPI_INT, i, mtag, MPI_COMM_WORLD);
@@ -94,11 +100,6 @@ int main(int argc, char **argv) {
 
         recuento = analizarSecuencia(&fragmentoAnalisis);
 
-        for (int i = 1; i < rank ; i++)
-        {
-            vector<int> bufRecuento;
-            MPI_Recv(&bufRecuento, 1, MPI_INT, i, mtag, MPI_COMM_WORLD, &status);
-        }
     } 
     else
     {
@@ -113,8 +114,11 @@ int main(int argc, char **argv) {
         recuento = analizarSecuencia(&fragmento);
         
     }
+    /* Luego de haber analizado los fragmentos con la función auxiliar
+    hago un reduce para sumar los resultados*/
     MPI_Reduce(&recuento[0], &recuentoTotal[0], 5, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
+    /* Imprimo en formato csv para su posterior análisis */
     if (rank==0){
         printf("Base,Ocurrencia\n");
         printf("A,%d\n", recuentoTotal[0]);

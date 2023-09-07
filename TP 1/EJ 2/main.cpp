@@ -9,11 +9,10 @@ int main(int argc, char **argv) {
 
     freopen("salida.csv", "w", stdout);
 
-    int ierror, rank, size, entrada = 8;
+    int ierror, rank, size;
     MPI_Init(&argc, &argv);
     MPI_Status status;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank); //Paso por referencia rank y la modifica
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank); (MPI_COMM_WORLD, &size);
     double tInicio, tFin;
 
     // Se define un vector de tamaño {megas}. 
@@ -48,7 +47,6 @@ int main(int argc, char **argv) {
             }
             else
             {
-                // MPI_Barrier(MPI_COMM_WORLD);
                 MPI_Recv(&mensaje[0], numElementos, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
                 tFin = MPI_Wtime();
  
