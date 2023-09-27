@@ -16,7 +16,6 @@ int main(int argc, char **argv) {
     MPI_Status status;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank); //Paso por referencia rank y la modifica
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    double tInicio, tFin;
 
     double valores[size] = {1.1, 1.15, 1.05, 1.01, 1.12};
 
