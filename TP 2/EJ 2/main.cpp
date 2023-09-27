@@ -2,7 +2,7 @@
 #include <mpi.h>
 #include <iostream>
 #include <vector>
-#include "modulos/funciones.h"
+// #include "modulos/funciones.h"
 
 using namespace std;
 
@@ -18,53 +18,59 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     double tInicio, tFin;
 
-    int megas = 40;
-    int N = megas * 1024 * 1024 /sizeof(int);
-    vector<int> mensaje(N, 0);
+    double valores[size] = {1.1, 1.15, 1.05, 1.01, 1.12};
+
+    // valores[rank] = (size - rank) * 1.5;
+    
+
+    double valorMax = valores[rank];
+    int rankMaxV;
+
+    for(int i = 0 ; i < size ; i++)
+    {
+        if(rank == i) cout<<"Soy "<<rank<<" y mi valor es "<<valores[rank]<<endl;
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
+
+    for(int paso = 1 ; paso < size ; paso *=2)
+    {
+        // int rankCompar = rank + paso;
+
+        if(rank % (2*paso) == 0)
+        {
+            int rankCompar = rank + paso;
+            if(rankCompar < size)
+            {
+                double valorCompar;
+                // printf("%d va a recibir de %d\n", rank, rankCompar);
+                MPI_Recv(&valorCompar, 1, MPI_DOUBLE, rankCompar, 0, MPI_COMM_WORLD, &status);
+                if(valorCompar > valorMax)
+                {
+                    valorMax = valorCompar;
+                    rankMaxV = rankCompar+1;
+                }
+            }
+        }
+        else
+        {
+            int rankEnviar = rank - paso;
+            if (rankEnviar >= 0)
+            {
+                // printf("%d va a enviar a %d\n", rank, rankEnviar);
+                MPI_Send(&valorMax, 1, MPI_DOUBLE, rankEnviar, 0, MPI_COMM_WORLD);
+            }
+            
+            
+        }
+        // MPI_Barrier(MPI_COMM_WORLD);
+    }
+
     if (rank == 0)
     {
-        for (int i = 0; i < mensaje.size() ; i++)
-            mensaje[i] = i;
-    }
-    if (rank == 0)
-        printf("Broadcast,Tiempo,Nro Procesadores\n");
-
-    // for(int tamanio = 2 ; tamanio < size ; tamanio = tamanio+2)
-    // {
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(rank == 0)
-        tInicio = MPI_Wtime();
-
-    My_BcastPtoPto(&mensaje[0], N, MPI_INT, 0, MPI_COMM_WORLD);
-
-    if(rank == 0)
-    {
-        tFin = MPI_Wtime();
-        printf("Punto a punto,%f\n", tFin-tInicio);
-    }
-        
-
-
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(rank == 0)
-        tInicio = MPI_Wtime();
-    My_BcastTree(&mensaje[0], N, MPI_INT, 0, MPI_COMM_WORLD);
-    if(rank == 0)
-    {
-        tFin = MPI_Wtime();
-        printf("Árbol,%f\n", tFin-tInicio);
+        cout<<"El valor máximo es "<<valorMax<<" y está en "<<rankMaxV<<endl;
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(rank == 0)
-        tInicio = MPI_Wtime();
-    MPI_Bcast(&mensaje[0], N, MPI_INT, 0, MPI_COMM_WORLD);
-    if(rank == 0)
-    {
-        tFin = MPI_Wtime();
-        printf("MPICH,%f\n", tFin-tInicio);
-    }
-    // }
+
 
 
     MPI_Finalize();

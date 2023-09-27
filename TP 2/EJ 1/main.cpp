@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     double tInicio, tFin;
 
-    int megas = 40;
+    int megas = 400;
     int N = megas * 1024 * 1024 /sizeof(int);
     vector<int> mensaje(N, 0);
     if (rank == 0)
