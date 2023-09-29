@@ -36,16 +36,43 @@ int main(int argc, char **argv) {
             displs[j] = displs[j-1] + recvcnts[j-1];
     }
 
+    if(!rank) printf("Cada uno va a tener:\n");
+
+
+    for(int i = 0 ; i < size ; i++)
+    {
+        if(rank == i)
+        {   
+            printf("Rank: %d\n",i);
+            for(int i = 0 ; i < rank+1 ; i++) cout<<"\t"<<sbuff[i]<<endl;
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
+
+    if(!rank) printf("\n----------\n");
+    MPI_Barrier(MPI_COMM_WORLD);
 
     MostrarSinMPI(sbuff, sendcnt, MPI_DOUBLE, rbuff, recvcnts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
+    
     if(!rank)
     {
-        for(int i = 0 ; i < rsize ; i++) cout<<rbuff[i]<<endl;
+        printf("Luego del gather vectorizado propio:\n");
+        for(int i = 0 ; i < rsize ; i++) cout<<"\t"<<rbuff[i]<<endl;
     }
 
-    
+    double *rbuff2 = NULL;
+    if(!rank) rbuff2 = new double[rsize]; 
 
+    MPI_Barrier(MPI_COMM_WORLD);
+    
+    MostrarConMPI(sbuff, sendcnt, MPI_DOUBLE, rbuff2, recvcnts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    if(!rank)
+    {
+        printf("\n----------\n");
+        printf("Luego del gather vectorizado de MPI:\n");
+        for(int i = 0 ; i < rsize ; i++) cout<<"\t"<<rbuff2[i]<<endl;
+    }
 
     MPI_Finalize();
 

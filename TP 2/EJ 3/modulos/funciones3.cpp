@@ -26,9 +26,13 @@ void MostrarSinMPI(double *sendbuf, int sendcnt, MPI_Datatype tipoDeDatoEnv, dou
     {
         int tam;
         MPI_Comm_size(comm, &tam);
-        int cont = recvcnt[raiz];
+        int cont = 0;
         vector<double> buffIntermedio;
-        for(int i = 0 ; i < sendcnt ; i++) recvbuf[i] = sendbuf[i];
+        for(int i = 0 ; i < sendcnt ; i++) 
+        {   
+            recvbuf[i] = sendbuf[i];
+            cont++;
+        }
 
         // recvbuf[raiz] = buffIntermedio[raiz];
         for(int i = 0 ; i < tam ; i++)
@@ -37,7 +41,11 @@ void MostrarSinMPI(double *sendbuf, int sendcnt, MPI_Datatype tipoDeDatoEnv, dou
             {
                 buffIntermedio.resize(recvcnt[i]);
                 MPI_Recv(&buffIntermedio[0], recvcnt[i], tipoDeDatoRecv, i, mtag, comm, MPI_STATUS_IGNORE);
-                for(int j = 0 ; j < sendcnt ; j++) recvbuf[j] = buffIntermedio[j];
+                for(int j = 0 ; j < recvcnt[i] ; j++) 
+                {  
+                    recvbuf[cont] = buffIntermedio[j];
+                    cont++;
+                }
             }
         }            
     }

@@ -1,7 +1,0 @@
-
-main.bin:50629 terminated with signal 11 at PC=55eb06ff5921 SP=7ffe32f96ab0.  Backtrace:
-./main.bin(+0x1921)[0x55eb06ff5921]
-./main.bin(+0x1680)[0x55eb06ff5680]
-/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7f85d6c29d90]
-/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7f85d6c29e40]
-./main.bin(+0x1365)[0x55eb06ff5365]
