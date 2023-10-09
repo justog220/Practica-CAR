@@ -29,8 +29,7 @@ int main(int argc, char **argv) {
     if (rank == 0)
         printf("Broadcast,Tiempo,Nro Procesadores\n");
 
-    // for(int tamanio = 2 ; tamanio < size ; tamanio = tamanio+2)
-    // {
+    // if(!rank) printf("N = %d", size);
     MPI_Barrier(MPI_COMM_WORLD);
     if(rank == 0)
         tInicio = MPI_Wtime();
@@ -40,11 +39,9 @@ int main(int argc, char **argv) {
     if(rank == 0)
     {
         tFin = MPI_Wtime();
-        printf("Punto a punto,%f\n", tFin-tInicio);
+        printf("Punto a punto,%f,%d\n", tFin-tInicio, size);
     }
         
-
-
     MPI_Barrier(MPI_COMM_WORLD);
     if(rank == 0)
         tInicio = MPI_Wtime();
@@ -52,7 +49,7 @@ int main(int argc, char **argv) {
     if(rank == 0)
     {
         tFin = MPI_Wtime();
-        printf("Árbol,%f\n", tFin-tInicio);
+        printf("Arbol,%f,%d\n", tFin-tInicio, size);
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -62,9 +59,9 @@ int main(int argc, char **argv) {
     if(rank == 0)
     {
         tFin = MPI_Wtime();
-        printf("MPICH,%f\n", tFin-tInicio);
+        printf("MPICH,%f,%d\n", tFin-tInicio, size);
     }
-    // }
+    
 
 
     MPI_Finalize();

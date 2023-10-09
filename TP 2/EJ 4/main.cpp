@@ -102,27 +102,32 @@ int main(int argc, char **argv) {
     
     int chunk;
     if(!rank) printf("Tope = %d\n", tope);
-    for(int i = 0; i < sizeChunks ; i++)
+    for(int i = 0; i < 1 ; i++)
     {
-        bool stop = false;
+        int it = 0;
         int n2, primesh=0, primes, n1;
         chunk = chunks[i];
         if(!rank) printf("Con chunk = %d\n", chunk);
         n1 = rank*chunk;
         while(1)
-        {        
+        {    
             n2 = n1 + chunk;
-            for(int n = n1 ; n < n2 and n < tope ; n++)
+            if(n2>tope) n2 = tope;
+            printf("Soy %d | n1 = %d ; n2 = %d\n", rank, n1, n2);
+            for(int n = n1 ; n < n2; n++)
             {
                 if(esPrimo(n)) primesh++;
             }
-            
+            // printf("Iteracion: %d, Rank = %d | primesh = %d\n", it, rank, primesh);
             MPI_Reduce(&primesh, &primes, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-            n1 += size*chunk;
             
+            n1 += size*chunk;
             if(!rank) printf("\tpi(%d) = %d\n", n1, primes);
+            if(n1>=tope) break;           
             /*Tengo que ver la forma de adaptar para que cuando se de una condicion de parada en uno de los procesos (n supera al tope)
             se detengan en todos los procesos.*/
+            it++;
+            
         }
         // MPI_Barrier(MPI_COMM_WORLD);
     }

@@ -8,11 +8,12 @@ void My_BcastPtoPto(void *sendbuff, int largo, MPI_Datatype tipoDeDato, int orig
     int mtag = 0;
     int rank;
     MPI_Comm_rank(communicator, &rank);
-    if(rank == 0)
+    if(rank == origen)
     {
-        for(int i = 1 ; i < tam ; i++)
+        for(int i = 0 ; i < tam ; i++)
         {
-            MPI_Send(sendbuff, largo, tipoDeDato, i, mtag, communicator);
+            if(i!=origen)
+                MPI_Send(sendbuff, largo, tipoDeDato, i, mtag, communicator);
         }
     }
     else

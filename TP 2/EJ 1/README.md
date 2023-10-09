@@ -1,0 +1,1 @@
+Hay que darle permiso y correr sólo el archivo exec.sh. Dentro de él se implementa el ciclo para ir lanzando con distintas unidades de cómputo.
