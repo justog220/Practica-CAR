@@ -1,0 +1,4 @@
+Broadcast,Tiempo,Nro Procesadores
+Punto a punto,0.149922,2
+Arbol,0.126187,2
+MPICH,0.128695,2

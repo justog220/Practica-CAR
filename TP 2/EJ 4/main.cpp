@@ -29,37 +29,46 @@ int main(int argc, char **argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank); //Paso por referencia rank y la modifica
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     
-    float chunk = 10000;
-    float chunks[5] = {pow(10, 3), pow(10, 4), pow(10, 5), pow(10, 6), 2*pow(10, 6)};
+    double chunk;
+    double chunks[5] = {pow(10, 3), pow(10, 4), pow(10, 5), pow(10, 6), 2*pow(10, 6)};
+    double limite = pow(10, 7);
+
+    double t1, tCalculo, tComm;
+    if(!rank) printf("Procesador,tCalculo,tComm,Chunk\n");
     for (int ch = 0 ; ch < 5 ; ch++)
     {
+        t1 = MPI_Wtime();
         chunk = chunks[ch];
         int n2=0, primesh=0, primes, n1=rank*chunk;
-        int limite = 1000000;
         
-        vector<vector<int>> extremos;
+        vector<int> extremos;
 
         while (n1<limite)
         {
             n2 = n1 + chunk;
-            extremos.push_back({n1, n2});
+            extremos.push_back(n1);
+            extremos.push_back(n2);
             n1 += size*chunk;
         }
 
-        for(int i = 0 ; i < extremos.size() ; i++)
+        for(int i = 0 ; i < extremos.size() ; i=i+2)
         {
-            n1 = extremos[i][0];
-            n2 = extremos[i][1];
+            n1 = extremos[i];
+            n2 = extremos[i+1];
             for(int n = n1 ; n < n2 ; n++)
             {
                 if(n >= limite) break;
                 if(esPrimo(n)) primesh++;
             }
         }
+        tCalculo = MPI_Wtime()-t1;
 
+        t1 = MPI_Wtime();
         MPI_Reduce(&primesh, &primes, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+        tComm = MPI_Wtime()-t1;
 
-        if(!rank) printf("Primos hasta %d con chunk = %f: %d\n", limite, chunk, primes);
+        if(!rank) printf("Primos hasta %f con chunk = %f: %d\n", limite, chunk, primes);
+        // printf("%d,%f,%f,%f\n", rank, tCalculo, tComm, chunk);
     }
     MPI_Finalize();
 }
