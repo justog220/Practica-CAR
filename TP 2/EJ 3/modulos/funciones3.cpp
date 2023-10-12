@@ -9,13 +9,7 @@ void MostrarConMPI(const void *sendbuf, int sendcnt, MPI_Datatype tipoDeDatoEnv,
     int rank;
     MPI_Comm_rank(comm, &rank);
     MPI_Gatherv(sendbuf, sendcnt, tipoDeDatoEnv, recvbuf, recvcnt, displs, tipoDeDatoRecv, raiz, comm);
-    // int tam;
-    // MPI_Comm_size(comm, &tam);
-    // if(rank == raiz)
-    // {
-    //     cout<<"Buffer:\n";
-    //     for(int i = 0 ; i < tam ; ++i) cout<<"\t"<<recvbuf<<endl;
-    // }
+
 }
 
 void MostrarSinMPI(double *sendbuf, int sendcnt, MPI_Datatype tipoDeDatoEnv, double *recvbuf, const int *recvcnt, const int *displs, MPI_Datatype tipoDeDatoRecv, int raiz, MPI_Comm comm)
@@ -33,8 +27,6 @@ void MostrarSinMPI(double *sendbuf, int sendcnt, MPI_Datatype tipoDeDatoEnv, dou
             recvbuf[i] = sendbuf[i];
             cont++;
         }
-
-        // recvbuf[raiz] = buffIntermedio[raiz];
         for(int i = 0 ; i < tam ; i++)
         {
             if(i!=rank)

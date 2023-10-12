@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "MPI Build",
+            "type": "shell",
+            "command": "mpicxx.mpich",
+            "args": ["-o", "main.bin", "main.cpp"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "MPI Run",
+            "type": "shell",
+            "command": "mpiexec.mpich",
+            "args": ["-n", "5", "./TP 2/EJ 2/main.bin"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            }
+        }
+    ]
+}

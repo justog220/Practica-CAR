@@ -27,27 +27,21 @@ int main(int argc, char **argv) {
         if(!archivo.is_open()) printf("\nAbrio\n");
         for(int i = 0; i<size ; i++)
             archivo>>valores[i];
-
-        // for(int i = 0; i<size ; i++)
-        //     cout<<"\t"<<valores[i]<<endl;
-
     }
+
     
     MPI_Bcast(valores, size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     double valorMax = valores[rank];
-    int rankMaxV = rank;
+    double rankMaxV = rank;
 
-    // for(int i = 0 ; i < size ; i++)
-    // {
-    //     if(rank == i) cout<<"Soy "<<rank<<" y mi valor es "<<valores[rank]<<endl;
-    //     MPI_Barrier(MPI_COMM_WORLD);
-    // }
+    double paqueteMax[2] = {valorMax, rankMaxV};
+    double paqueteCompar[2];
+
+
 
     for(int paso = 1 ; paso < size ; paso *=2)
     {
-        // int rankCompar = rank + paso;
-
         if(rank % (2*paso) == 0)
         {
             int rankCompar = rank + paso;
@@ -55,11 +49,12 @@ int main(int argc, char **argv) {
             {
                 double valorCompar;
                 // printf("%d va a recibir de %d\n", rank, rankCompar);
-                MPI_Recv(&valorCompar, 1, MPI_DOUBLE, rankCompar, 0, MPI_COMM_WORLD, &status);
-                if(valorCompar >= valorMax)
+                MPI_Recv(&paqueteCompar, 2, MPI_DOUBLE, rankCompar, 0, MPI_COMM_WORLD, &status);
+                if(paqueteCompar[0] >= paqueteMax[0])
                 {
-                    valorMax = valorCompar;
-                    rankMaxV = rankCompar;
+                    paqueteMax[0] = paqueteCompar[0];
+                    paqueteMax[1] = paqueteCompar[1];
+                    // printf("Nuevo valor maximo %f y rank %f en %d\n", paqueteMax[0], paqueteMax[1], rank);
                 }
             }
         }
@@ -69,18 +64,18 @@ int main(int argc, char **argv) {
             if (rankEnviar >= 0)
             {
                 // printf("%d va a enviar a %d\n", rank, rankEnviar);
-                MPI_Send(&valorMax, 1, MPI_DOUBLE, rankEnviar, 0, MPI_COMM_WORLD);
+                MPI_Send(&paqueteMax, 2, MPI_DOUBLE, rankEnviar, 0, MPI_COMM_WORLD);
             }
             
             
         }
-        // MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);
     }
 
     if (rank == 0)
     {
         // cout<<"El valor máximo es "<<valorMax<<" y está en "<<rankMaxV<<endl;
-        printf("%f,%d\n", valorMax, rankMaxV);
+        printf("%f,%f\n", paqueteMax[0], paqueteMax[1]);
     }
 
 
