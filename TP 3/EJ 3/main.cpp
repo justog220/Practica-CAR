@@ -9,7 +9,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
     freopen("salida.csv", "w", stdout);
-    int num_iteraciones = 5, maxThreads = omp_get_max_threads();
+    int num_iteraciones = 5, maxThreads = omp_get_max_threads()/2;
     vector<int> lista_de_filas(num_iteraciones, 500);
     vector<int> lista_de_columnas(num_iteraciones, 500);
     
@@ -20,11 +20,10 @@ int main(int argc, char **argv)
     }
     
     double t0, t1;
-    bool seImprimio = false;
 
     printf("NroThreads,Filas,Columnas,Tiempo\n");
-    for(int it = 0 ; it < 1 ; it ++)
-        {
+    for(int it = 0 ; it < 5 ; it ++)
+    {
         for(int numThreads = 1 ; numThreads <= maxThreads ; numThreads++)
         {
             omp_set_num_threads(numThreads);

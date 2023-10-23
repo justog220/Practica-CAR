@@ -22,8 +22,8 @@ int esPrimo(int n)
 int main(int argc, char **argv) 
 {
     freopen("salida.csv", "w", stdout);
-    int limite = pow(10, 7), n=2, primes = 0, maxThreads = omp_get_max_threads();
-    unsigned t0, t1;
+    int limite = pow(10, 7), n=2, primes = 0, maxThreads = omp_get_max_threads()/2;
+    double wt0, wt1;
 
     int nroChunks = 6;
     vector<int> chunks(nroChunks, 10);
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
             {
                 primes = 0;
                 int chunk = chunks[i];
-                t0 = clock();
+                wt0 = omp_get_wtime();
                 #pragma omp parallel default(none) shared(limite, chunk) private(n) reduction(+:primes) 
                 {
                     #pragma omp for schedule(static,chunk)
@@ -51,12 +51,12 @@ int main(int argc, char **argv)
                         if(esPrimo(n)) primes++;
                     }
                 }
-                t1 = clock();
-                printf("%d,Static,%d,%d,%d,%f\n",hilos,chunk,limite,primes,double(t1-t0)/CLOCKS_PER_SEC);
+                wt1 = omp_get_wtime();
+                printf("%d,Static,%d,%d,%d,%f\n",hilos,chunk,limite,primes,wt1-wt0);
 
 
                 primes = 0;
-                t0 = clock();
+                wt0 = omp_get_wtime();
                 #pragma omp parallel default(none) shared(limite, chunk) private(n) reduction(+:primes) 
                 {
                     #pragma omp for schedule(dynamic,chunk)
@@ -65,8 +65,8 @@ int main(int argc, char **argv)
                         if(esPrimo(n)) primes++;
                     }
                 }
-                t1 = clock();
-                printf("%d,Dynamic,%d,%d,%d,%f\n",hilos,chunk,limite,primes,double(t1-t0)/CLOCKS_PER_SEC);
+                wt1 = omp_get_wtime();
+                printf("%d,Dynamic,%d,%d,%d,%f\n",hilos,chunk,limite,primes,wt1-wt0);
             }
         }
     }
