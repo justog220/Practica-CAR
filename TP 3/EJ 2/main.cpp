@@ -21,6 +21,7 @@ int esPrimo(int n)
 
 int main(int argc, char **argv) 
 {
+    freopen("salida.csv", "w", stdout);
     int limite = pow(10, 7), n=2, primes = 0, maxThreads = omp_get_max_threads();
     unsigned t0, t1;
 
@@ -32,9 +33,9 @@ int main(int argc, char **argv)
 
     int nroIteraciones = 5;
 
-    for(int it = 0 ; it < nroIteraciones ; it++)
+    for(int it = 0 ; it < 3 ; it++)
     {
-        for(int hilos = 2 ; hilos <= maxThreads ; hilos++)
+        for(int hilos = 1 ; hilos <= maxThreads ; hilos++)
         {
             omp_set_num_threads(hilos);
             for(int i = 0 ; i < nroChunks ; i++)
