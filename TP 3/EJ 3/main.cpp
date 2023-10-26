@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
                 int i, j, k;
                 t0 = omp_get_wtime();
-                #pragma omp parrallel default(none) shared(matrizA, matrizB, matrizResultante) private(i, j, k)
+                #pragma omp parallel default(none) shared(matrizA, matrizB, matrizResultante, filas, columnas) private(i, j, k)
                 {
                     #pragma omp for
                     for (i = 0; i < filas; i++)
